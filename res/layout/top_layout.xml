@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.cmtv.tv.widget.TopLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/top_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/top_layout_padding_bottom"
+    android:paddingTop="@dimen/top_layout_padding_top" >
+
+    <ImageView
+        android:id="@+id/back_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="50.0dp"
+        android:src="@drawable/back_icon"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/top_layout_text_title_left_margin"
+        android:layout_toRightOf="@id/back_icon"
+        android:textColor="@color/text_color_focus"
+        android:textSize="@dimen/universal_middle_text_size"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_sub_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/top_layout_text_title_left_margin"
+        android:layout_toRightOf="@id/text_title"
+        android:textColor="@color/white"
+        android:textSize="@dimen/universal_middle_text_size"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/top_layout_text_title_left_margin"
+        android:layout_toRightOf="@id/text_sub_title"
+        android:textColor="@color/text_color_focus"
+        android:textSize="@dimen/universal_middle_text_size"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/top_layout_time_margin_right"
+        android:textSize="@dimen/universal_middle_text_size"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/wifi_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/text_time"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/top_layout_wifi_icon_margin_right"
+        android:layout_toLeftOf="@id/text_time"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/menu_tip_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/top_layout_menu_tip_margin_right"
+        android:layout_toLeftOf="@id/wifi_icon"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/menu_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/top_layout_menu_icon_margin_right"
+            android:src="@drawable/menu_btn" />
+
+        <TextView
+            android:id="@+id/menu_tip_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:text="@string/search_result_sort_hint"
+            android:textColor="@color/text_color_focus"
+            android:textSize="@dimen/universal_middle_text_size" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/top_layout_bottom_image"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/top_layout_bottom_image_height"
+        android:layout_below="@id/text_time"
+        android:layout_marginTop="@dimen/top_layout_image_margin_bottom"
+        android:src="@drawable/top_layout_line"
+        android:visibility="gone" />
+
+</com.cmtv.tv.widget.TopLayout>
