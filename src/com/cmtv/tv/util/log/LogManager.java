@@ -9,7 +9,7 @@ public class LogManager {
 	public static final boolean CAN_SHOW = true;
 	
 	public static boolean canShow() {
-		return canShow();
+		return CAN_SHOW;
 	}
 	
 	public static void d(String msg) {

@@ -29,6 +29,22 @@
             android:layout_marginLeft="@dimen/home_page_top_layout_margin_left"
             android:layout_marginTop="@dimen/top_layout_margin_top"
             layout="@layout/top_layout" />
+
+        <com.cmtv.tv.widget.BaseViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+        </com.cmtv.tv.widget.BaseViewPager>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/tab_page_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/home_page_tab_margin_left"
+        android:layout_marginTop="@dimen/home_page_tab_margin_top"
+        android:src="@drawable/tab_focus_holo"
+        android:visibility="visible" />
 
 </FrameLayout>

@@ -17,15 +17,23 @@
 package com.cmtv.tv.widget.pagerindicator;
 
 import com.cmtv.tv.R;
+import com.cmtv.tv.activity.HomePageActivity;
+import com.cmtv.tv.widget.BaseViewPager;
+import com.cmtv.tv.widget.BaseViewPager.OnPageChangeListener;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Shader;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -38,6 +46,12 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 public class TabPageIndicator extends HorizontalScrollView implements PageIndicator {
     /** Title text used when no title is provided by the adapter. */
     private static final CharSequence EMPTY_TITLE = "";
+    
+    private Context mContext;
+    
+    private Shader mNormalShader;
+    private Shader mFocusedShader;
+    private int mTextFocusColor;
 
     /**
      * Interface for a callback when the selected tab has been reselected.
@@ -56,9 +70,9 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
     private final OnClickListener mTabClickListener = new OnClickListener() {
         public void onClick(View view) {
             TabView tabView = (TabView)view;
-            final int oldSelected = mViewPager.getCurrentItem();
+            final int oldSelected = mBaseViewPager.getCurrentItem();
             final int newSelected = tabView.getIndex();
-            mViewPager.setCurrentItem(newSelected);
+            mBaseViewPager.setCurrentItem(newSelected);
             if (oldSelected == newSelected && mTabReselectedListener != null) {
                 mTabReselectedListener.onTabReselected(newSelected);
             }
@@ -67,8 +81,8 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
 
     private final IcsLinearLayout mTabLayout;
 
-    private ViewPager mViewPager;
-    private ViewPager.OnPageChangeListener mListener;
+    private BaseViewPager mBaseViewPager;
+    private BaseViewPager.OnPageChangeListener mListener;
 
     private int mMaxTabWidth;
     private int mSelectedTabIndex;
@@ -83,6 +97,12 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
         super(context, attrs);
         setHorizontalScrollBarEnabled(false);
 
+        //custom
+        mContext = context;
+        this.mTextFocusColor = context.getResources().getColor(R.color.tab_view_indicator_focus_color);
+        this.mFocusedShader = new LinearGradient(0.0f, 0.0f, 0.0f, 50.0f, mTextFocusColor, mTextFocusColor, Shader.TileMode.CLAMP);
+        this.mNormalShader = new LinearGradient(0.0f, 0.0f, 0.0f, 40.0f, Color.WHITE, Color.GRAY, Shader.TileMode.CLAMP);
+        
         mTabLayout = new IcsLinearLayout(context, R.attr.vpiTabPageIndicatorStyle);
         addView(mTabLayout, new ViewGroup.LayoutParams(WRAP_CONTENT, MATCH_PARENT));
     }
@@ -155,10 +175,14 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
         tabView.mIndex = index;
         tabView.setFocusable(true);
         tabView.setOnClickListener(mTabClickListener);
-        tabView.setText(text);
+        tabView.getTabText().setTextSize(0, this.mContext.getResources().getDimension(R.dimen.universal_large_text_size));
+        tabView.getTabText().setText(text);
+        
+        //custom
+        tabView.getPaint().setShader(mNormalShader);
 
         if (iconResId != 0) {
-            tabView.setCompoundDrawablesWithIntrinsicBounds(iconResId, 0, 0, 0);
+        	tabView.getTabText().setCompoundDrawablesWithIntrinsicBounds(iconResId, 0, 0, 0);
         }
 
         mTabLayout.addView(tabView, new LinearLayout.LayoutParams(0, MATCH_PARENT, 1));
@@ -179,33 +203,51 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
     }
 
     @Override
-    public void onPageSelected(int arg0) {
-        setCurrentItem(arg0);
+    public void onPageSelected(int position) {
+    	//custom
+        System.out.println("mSelectedTabIndex : "+mSelectedTabIndex+", position : "+position);
+        int width = this.mTabLayout.getChildAt(0).getWidth();
+        int start = width * mSelectedTabIndex;
+        int end = position * width;
+        ((HomePageActivity)mContext).startCursorAnimation(start, end);
+    	
+        setCurrentItem(position);
         if (mListener != null) {
-            mListener.onPageSelected(arg0);
+            mListener.onPageSelected(position);
         }
+        
+        //custom
+        final int tabCount = mTabLayout.getChildCount();
+        for (int i = 0; i < tabCount; i++) {
+        	final TabView child = (TabView)mTabLayout.getChildAt(i);
+        	if (i == position) {
+        		child.getPaint().setShader(mFocusedShader);
+			} else {
+				child.getPaint().setShader(mNormalShader);
+			}
+		}
     }
 
     @Override
-    public void setViewPager(ViewPager view) {
-        if (mViewPager == view) {
+    public void setBaseViewPager(BaseViewPager view) {
+        if (mBaseViewPager == view) {
             return;
         }
-        if (mViewPager != null) {
-            mViewPager.setOnPageChangeListener(null);
+        if (mBaseViewPager != null) {
+            mBaseViewPager.setOnPageChangeListener(null);
         }
         final PagerAdapter adapter = view.getAdapter();
         if (adapter == null) {
-            throw new IllegalStateException("ViewPager does not have adapter instance.");
+            throw new IllegalStateException("BaseViewPager does not have adapter instance.");
         }
-        mViewPager = view;
+        mBaseViewPager = view;
         view.setOnPageChangeListener(this);
         notifyDataSetChanged();
     }
 
     public void notifyDataSetChanged() {
         mTabLayout.removeAllViews();
-        PagerAdapter adapter = mViewPager.getAdapter();
+        PagerAdapter adapter = mBaseViewPager.getAdapter();
         IconPagerAdapter iconAdapter = null;
         if (adapter instanceof IconPagerAdapter) {
             iconAdapter = (IconPagerAdapter)adapter;
@@ -230,18 +272,18 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
     }
 
     @Override
-    public void setViewPager(ViewPager view, int initialPosition) {
-        setViewPager(view);
+    public void setBaseViewPager(BaseViewPager view, int initialPosition) {
+        setBaseViewPager(view);
         setCurrentItem(initialPosition);
     }
 
     @Override
     public void setCurrentItem(int item) {
-        if (mViewPager == null) {
-            throw new IllegalStateException("ViewPager has not been bound.");
+        if (mBaseViewPager == null) {
+            throw new IllegalStateException("BaseViewPager has not been bound.");
         }
         mSelectedTabIndex = item;
-        mViewPager.setCurrentItem(item);
+        mBaseViewPager.setCurrentItem(item);
 
         final int tabCount = mTabLayout.getChildCount();
         for (int i = 0; i < tabCount; i++) {
@@ -259,13 +301,33 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
         mListener = listener;
     }
 
-    private class TabView extends TextView {
+    private class TabView extends FrameLayout {
         private int mIndex;
+        private TextView tabText;
+        private ImageView nofityImg;
 
         public TabView(Context context) {
             super(context, null, R.attr.vpiTabPageIndicatorStyle);
+            init();
         }
 
+        private void init() {
+        	this.tabText = new TextView(getContext());
+        	FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        	layoutParams.leftMargin = 22;
+        	layoutParams.rightMargin = 22;
+        	layoutParams.gravity = Gravity.CENTER;
+        	this.tabText.setLayoutParams(layoutParams);
+        	addView(tabText);
+        	
+        	this.nofityImg = new ImageView(getContext());
+        	FrameLayout.LayoutParams layoutParams2 = new FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        	layoutParams2.gravity = Gravity.RIGHT;
+        	this.nofityImg.setLayoutParams(layoutParams2);
+        	this.nofityImg.setImageResource(R.drawable.notify_dot);
+        	addView(nofityImg);
+        }
+        
         @Override
         public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -280,5 +342,36 @@ public class TabPageIndicator extends HorizontalScrollView implements PageIndica
         public int getIndex() {
             return mIndex;
         }
+        
+        public Paint getPaint() {
+        	if (tabText != null) {
+				return tabText.getPaint();
+			}
+        	return new Paint();
+        }
+        
+        public TextView getTabText() {
+        	return tabText;
+        }
+        
+        public void setNotify(boolean isShow) {
+        	if (isShow) {
+				nofityImg.setVisibility(View.VISIBLE);
+			} else {
+				nofityImg.setVisibility(View.INVISIBLE);
+			}
+        }
+    }
+    
+    /**
+     * custom
+     */
+    public void requestFirstTabSelected() {
+      View localView = this.mTabLayout.getChildAt(0);
+      if ((localView != null) && ((localView instanceof TabView)))
+      {
+        ((TabView)localView).getPaint().setShader(this.mFocusedShader);
+        localView.requestFocus();
+      }
     }
 }

@@ -17,30 +17,30 @@
 
 package com.cmtv.tv.widget.pagerindicator;
 
-import android.support.v4.view.ViewPager;
+import com.cmtv.tv.widget.BaseViewPager;
 
 /**
  * A PageIndicator is responsible to show an visual indicator on the total views
  * number and the current visible view.
  */
-public interface PageIndicator extends ViewPager.OnPageChangeListener {
+public interface PageIndicator extends BaseViewPager.OnPageChangeListener {
     /**
-     * Bind the indicator to a ViewPager.
+     * Bind the indicator to a BaseViewPager.
      *
      * @param view
      */
-    void setViewPager(ViewPager view);
+    void setBaseViewPager(BaseViewPager view);
 
     /**
-     * Bind the indicator to a ViewPager.
+     * Bind the indicator to a BaseViewPager.
      *
      * @param view
      * @param initialPosition
      */
-    void setViewPager(ViewPager view, int initialPosition);
+    void setBaseViewPager(BaseViewPager view, int initialPosition);
 
     /**
-     * <p>Set the current page of both the ViewPager and indicator.</p>
+     * <p>Set the current page of both the BaseViewPager and indicator.</p>
      *
      * <p>This <strong>must</strong> be used if you need to set the page before
      * the views are drawn on screen (e.g., default start page).</p>
@@ -54,7 +54,7 @@ public interface PageIndicator extends ViewPager.OnPageChangeListener {
      *
      * @param listener
      */
-    void setOnPageChangeListener(ViewPager.OnPageChangeListener listener);
+    void setOnPageChangeListener(BaseViewPager.OnPageChangeListener listener);
 
     /**
      * Notify the indicator that the fragment list has changed.

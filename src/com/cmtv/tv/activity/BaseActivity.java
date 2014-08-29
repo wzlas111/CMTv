@@ -8,14 +8,16 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.ViewGroup;
 
-public class BaseActivity extends Activity {
+public class BaseActivity extends FragmentActivity {
 
 	protected ViewGroup mContainer;
-	protected TopLayout mTopLayout;
 	private Bitmap mNewBackgroud;
 	private Activity mActivity;
+	
+	protected TopLayout mTopLayout;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +49,13 @@ public class BaseActivity extends Activity {
 		super.onDestroy();
 	}
 	
+	public Activity getActivity() {
+		return mActivity;
+	}
+	
 	public TopLayout getTopLayout() {
 		this.mTopLayout = (TopLayout)this.mContainer.findViewById(R.id.top_layout);
 		return this.mTopLayout;
 	}
+	
 }
